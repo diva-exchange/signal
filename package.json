@@ -1,0 +1,74 @@
+{
+  "name": "diva-signal-server",
+  "version": "0.1.0",
+  "description": "STUN rendezvous server, NAT traversal for iroha peers",
+  "main": "app/src/signal-server.js",
+  "keywords": [
+    "p2p",
+    "peer-to-peer",
+    "proxy",
+    "network",
+    "firewall",
+    "hole punch",
+    "stun",
+    "turn"
+  ],
+  "author": "Konrad Baechler <konrad@diva.exchange> (https://diva.exchange)",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/diva.exchange/signal.git"
+  },
+  "scripts": {
+    "lint": "node_modules/.bin/eslint --fix app/src",
+    "start": "pm2 flush ; pm2 start ecosystem.config.js --env production",
+    "start-dev": "pm2 flush ; pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
+    "test": "node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha"
+  },
+  "dependencies": {
+    "diva-logger": "^0.2.2",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "simple-peer": "^9.6.2",
+    "wrtc": "^0.4.4",
+    "ws": "^7.2.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^7.1.1",
+    "nyc": "^15.0.0"
+  },
+  "peerDependencies": {
+    "pm2": "^4.2.3"
+  },
+  "mocha": {
+    "require": [
+      "esm"
+    ],
+    "recursive": true,
+    "spec": "app/test/"
+  },
+  "nyc": {
+    "reporter": [
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "include": [
+      "app/src/**/*.js"
+    ],
+    "require": [
+      "esm"
+    ],
+    "check-coverage": false,
+    "cache": true
+  }
+}
