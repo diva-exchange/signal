@@ -26,7 +26,7 @@ if (!process.argv[2] || !map[process.argv[2]]) {
 
 console.log(ident)
 
-const websocket = new WebSocket('ws://localhost:3913', {
+const websocket = new WebSocket('wss://signal.diva.exchange', {
   perMessageDeflate: false
 })
 
