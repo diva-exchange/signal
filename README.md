@@ -92,7 +92,7 @@ Coverage reports are stored within `./coverage`. Use any browser and open `./cov
     npm run lint
 
 ## Contact the Developers
-Mastadon: [social.diva.exchange/@Konrad](https://social.diva.exchange/@Konrad)
+Mastodon: [social.diva.exchange/@Konrad](https://social.diva.exchange/@Konrad)
 
 Telegram: [diva.exchange Chat](https://t.me/diva_exchange_chat_de)
 
