@@ -1,6 +1,6 @@
 {
   "name": "diva-signal-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "STUN rendezvous server, NAT traversal for iroha peers",
   "main": "app/src/signal-server.js",
   "keywords": [
