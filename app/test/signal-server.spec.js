@@ -31,7 +31,7 @@ describe('//diva// /signal', () => {
     })
 
     it('Http server response', () => {
-      const s = SignalServer.make(3913)
+      const s = SignalServer.make(3914)
       const request = chai.request(s.getApp())
       request.get('/').then(res => {
         assert.strictEqual(res.status, 200)
@@ -43,12 +43,13 @@ describe('//diva// /signal', () => {
     })
 
     it('WebSocket Messaging', () => {
-      const s = SignalServer.make(3913)
+      const port = 3915
+      const s = SignalServer.make(port)
 
       s.getServer().on('listening', () => {
         setTimeout(() => { s.shutdown() }, 1000)
 
-        const ws1 = new WebSocket('ws://localhost:3913', {
+        const ws1 = new WebSocket('ws://localhost:' + port, {
           perMessageDeflate: false
         })
         ws1.on('open', () => {
@@ -58,7 +59,7 @@ describe('//diva// /signal', () => {
           ws1.send(JSON.stringify({ type: 'invalid type', from: 'bogus1', to: 'bogus2' }))
         })
 
-        const ws2 = new WebSocket('ws://localhost:3913', {
+        const ws2 = new WebSocket('ws://localhost:' + port, {
           perMessageDeflate: false
         })
         ws2.on('open', () => {

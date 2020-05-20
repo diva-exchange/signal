@@ -1,7 +1,7 @@
 {
   "name": "@diva.exchange/signal-server",
-  "version": "1.0.2",
-  "description": "STUN rendezvous server, NAT traversal for iroha peers",
+  "version": "1.0.3",
+  "description": "STUN rendezvous server, NAT traversal for peers",
   "main": "app/src/signal-server.js",
   "keywords": [
     "p2p",
@@ -27,7 +27,7 @@
     "test": "node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha"
   },
   "dependencies": {
-    "diva-logger": "^0.2.2",
+    "@diva.exchange/diva-logger": "^0.2.5",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "simple-peer": "^9.7.2",

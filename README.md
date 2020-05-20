@@ -3,9 +3,9 @@
 More about DIVA.EXCHANGE on https://diva.exchange.
 
 ## Overview and Architecture
-A generic rendezvous server to enable NAT traversal of services located behind firewalls. Let's take a look at the architecture:
+A generic rendezvous server to enable NAT traversal of services located behind firewalls. Let's take a look at the architecture. The figure below uses - as an example - "Iroha" clients as peers. These clients just want to talk to each other.
 
-![Architecture DIVA.EXCHANGE Signal Server](https://images.squarespace-cdn.com/content/v1/5df2397428acdb23a0c42b1a/1585659503454-CV3OICEJ6BQDHL4SVPZR/ke17ZwdGBToddI8pDm48kH1jbRKTUD0pWoTueEFSb2FZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIUoInBklEqBy6RNIZmUpQyn4PQwoISE14b5-2BJc6ligKMshLAGzx4R3EDFOm1kBS/diva-webrtc-iroha.jpg)
+![Architecture DIVA.EXCHANGE Signal Server](https://www.diva.exchange/wp-content/uploads/2020/05/diva-webrtc-iroha.jpg)
 
 ## Getting Started
 
@@ -92,7 +92,6 @@ Coverage reports are stored within `./coverage`. Use any browser and open `./cov
     npm run lint
 
 ## Contact the Developers
-Mastodon: [social.diva.exchange/@Konrad](https://social.diva.exchange/@Konrad)
 
-Telegram: [diva.exchange Chat](https://t.me/diva_exchange_chat_de)
+Via the [website](https://www.diva.exchange/en/team-and-contact/) - several options, including Chat.
 
