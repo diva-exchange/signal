@@ -11,8 +11,6 @@ WORKDIR /home/node
 COPY package.json /home/node/package.json
 COPY app /home/node/app
 
-# If you are building your code for production
-# RUN npm ci --only=production
 RUN apk --no-cache add \
   make \
   gcc \
