@@ -135,12 +135,12 @@ export class SignalServer {
   /**
    * @param arr {Array} Data array, according to API spec
    * @param id {Number} Id of the WebSocket
+   * @return void
    * @private
    */
-  _ident (arr, id) {
-    const ident = (async () => {
-      return await customAlphabet(CUSTOM_ALPHABET, Math.floor(Math.random() * 12) + 12)()
-    })()
+  async _ident (arr, id) {
+    const nanoid = customAlphabet(CUSTOM_ALPHABET, Math.floor(Math.random() * 12) + 12)
+    const ident = await nanoid()
 
     // send the new ident
     this._sockets[id].send(JSON.stringify(['ident', ident]))

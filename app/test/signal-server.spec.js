@@ -73,14 +73,14 @@ describe('//diva// /signal', () => {
             const arr = JSON.parse(data)
             switch (arr[0]) {
               case 'ident':
+                assert.isString(arr[1])
                 ws1.send(JSON.stringify(['join', arr[1], 'test-room']))
                 break
               case 'join':
+                assert.isString(arr[1])
                 break
               case 'stun':
                 ws1.send(JSON.stringify(['signal', 'some-ident', 'some-other-ident', 'some-data']))
-                break
-              case 'signal':
                 break
             }
           })
