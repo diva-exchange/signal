@@ -53,18 +53,37 @@ describe('//diva// /signal', () => {
           perMessageDeflate: false
         })
         ws1.on('open', () => {
-          ws1.send('invalid string')
-          ws1.send(JSON.stringify({ type: 'register', from: 'client1', to: 'client2' }))
-          ws1.send(JSON.stringify({ type: 'invalid object' }))
-          ws1.send(JSON.stringify({ type: 'invalid type', from: 'bogus1', to: 'bogus2' }))
-        })
+          // errors
+          ws1.send('invalid json')
+          ws1.send(JSON.stringify(['join', 'test-room']))
+          ws1.send(JSON.stringify(['bogus']))
+          ws1.send(JSON.stringify({ a: 'bogus' }))
+          ws1.send(JSON.stringify(['signal', 'some-ident', 'some-other-ident']))
+          ws1.send(JSON.stringify(['signal', 'some-ident', 'some-bogus-ident', 'some-data']))
 
-        const ws2 = new WebSocket('ws://localhost:' + port, {
-          perMessageDeflate: false
-        })
-        ws2.on('open', () => {
-          ws2.send(JSON.stringify({ type: 'register', from: 'client2', to: 'client1' }))
-          ws2.send(JSON.stringify({ type: 'signal', from: 'client2', to: 'client1' }))
+          // join
+          ws1.send(JSON.stringify(['join', 'some-ident', 'other-room']))
+          ws1.send(JSON.stringify(['join', 'some-ident', 'other-room']))
+          ws1.send(JSON.stringify(['join', 'some-other-ident', 'other-room']))
+
+          ws1.send(JSON.stringify(['ident']))
+          ws1.send(JSON.stringify(['ident']))
+
+          ws1.on('message', (data) => {
+            const arr = JSON.parse(data)
+            switch (arr[0]) {
+              case 'ident':
+                ws1.send(JSON.stringify(['join', arr[1], 'test-room']))
+                break
+              case 'join':
+                break
+              case 'stun':
+                ws1.send(JSON.stringify(['signal', 'some-ident', 'some-other-ident', 'some-data']))
+                break
+              case 'signal':
+                break
+            }
+          })
         })
       })
     })

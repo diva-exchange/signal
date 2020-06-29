@@ -7,10 +7,13 @@
 'use strict'
 
 import express from 'express'
+import { customAlphabet } from 'nanoid'
 import path from 'path'
 import WebSocket from 'ws'
 
 import { Logger } from '@diva.exchange/diva-logger'
+
+const CUSTOM_ALPHABET = 'ABCDFGHJKMNPQRSTVWXYZabcdfghjkmnpqrstvwxyz'
 
 export class SignalServer {
   /**
@@ -36,7 +39,11 @@ export class SignalServer {
    * @private
    */
   constructor (port) {
-    this._mapPeers = new Map()
+    this._id = 0
+    this._sockets = []
+    this._idents = []
+    this._mapIdent = new Map()
+    this._mapRoom = new Map()
 
     /** @type {Function} */
     this._app = express()
@@ -60,31 +67,41 @@ export class SignalServer {
     })
 
     this._websocketServer.on('connection', (socket) => {
-      socket.on('message', (message) => {
-        let obj = {}
+      const id = this._id
+      let arr = []
+      this._id++
+      this._sockets[id] = socket
+      this._sockets[id].on('message', (message) => {
         try {
-          obj = JSON.parse(message)
-          if (!obj.type || !obj.from || !obj.to) {
-            Logger.trace('invalid object')
+          arr = JSON.parse(message)
+          if (!Array.isArray(arr) || !arr[0]) {
             return
           }
-        } catch (error) {
-          Logger.trace(error)
-          return
-        }
 
-        switch (obj.type) {
-          case 'register':
-            this._register(obj, socket)
-            break
-          case 'signal':
-            this._signal(obj)
-            break
-          default:
-            Logger.error('unknown message type')
+          switch (arr.shift()) {
+            case 'ident':
+              this._ident(arr, id)
+              break
+            case 'join':
+              this._join(arr, id)
+              break
+            case 'signal':
+              this._signal(arr)
+              break
+            default:
+              Logger.error('unsupported api call')
+          }
+        } catch (error) {
+          Logger.error(error)
         }
       })
-      socket.on('close', (code, reason) => {
+
+      this._sockets[id].on('close', (code, reason) => {
+        this._mapRoom.forEach((mapRoom) => {
+          mapRoom.delete(this._idents[id])
+        })
+        this._mapIdent.delete(this._idents[id])
+        delete this._sockets[id]
         Logger.trace(code + ' ' + reason)
       })
     })
@@ -102,7 +119,7 @@ export class SignalServer {
   }
 
   /**
-   * @returns {WebSocket.Server}
+   * @returns {Function} Express app
    */
   getApp () {
     return this._app
@@ -116,50 +133,80 @@ export class SignalServer {
   }
 
   /**
-   * @param obj
-   * @param socket
+   * @param arr {Array} Data array, according to API spec
+   * @param id {Number} Id of the WebSocket
    * @private
    */
-  _register (obj, socket) {
-    const identFrom = obj.from + ':' + obj.to
-    const identTo = obj.to + ':' + obj.from
+  _ident (arr, id) {
+    const ident = (async () => {
+      return await customAlphabet(CUSTOM_ALPHABET, Math.floor(Math.random() * 12) + 12)()
+    })()
 
-    this._mapPeers.set(identFrom, {
-      from: obj.from,
-      socket: socket,
-      to: obj.to
-    })
+    // send the new ident
+    this._sockets[id].send(JSON.stringify(['ident', ident]))
+    this._idents[id] = ident
+  }
 
-    if (this._mapPeers.has(identTo)) {
-      // socket is the initiator
-      socket.send(JSON.stringify({
-        type: 'init',
-        from: obj.from,
-        to: obj.to
-      }))
+  // @TODO check validity of ident, like on the iroha blockchain
+  /**
+   * Join a room
+   *
+   * @param arr {Array} Data array, according to API spec
+   * @param id {Number} Id of the WebSocket
+   * @private
+   */
+  _join (arr, id) {
+    if (arr.length !== 2) {
+      return
+    }
+    const [ident, room] = arr
 
-      const objTo = this._mapPeers.get(identTo)
-      // socket is the recipient
-      objTo.socket.send(JSON.stringify({
-        type: 'rcpt',
-        from: objTo.from,
-        to: objTo.to
-      }))
+    // store the given ident locally
+    if (!this._mapIdent.has(ident)) {
+      this._idents[id] = ident
+      this._mapIdent.set(ident, id)
+    }
+
+    // join a room
+    if (!this._mapRoom.has(room)) {
+      this._mapRoom.set(room, new Map())
+    }
+
+    const mapRoom = this._mapRoom.get(room)
+    // a room can be joined only once
+    if (mapRoom.has(ident)) {
+      return
+    }
+
+    mapRoom.set(ident, this._mapIdent.get(ident))
+
+    // respond with the room
+    this._sockets[id].send(JSON.stringify(['join', room]))
+
+    // walk through the room and send a p2p connection request to each participant
+    if (mapRoom.size > 1) {
+      mapRoom.forEach((i, to) => {
+        if (ident !== to) {
+          this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['stun', to, ident, true]))
+          this._sockets[this._mapIdent.get(ident)].send(JSON.stringify(['stun', ident, to, false]))
+        }
+      })
     }
   }
 
   /**
-   * @param obj
+   * @param arr {Array} Data array, according to API spec
    * @private
    */
-  _signal (obj) {
-    const identTo = obj.to + ':' + obj.from
-    this._mapPeers.get(identTo).socket.send(JSON.stringify({
-      type: 'signal',
-      from: obj.to,
-      to: obj.from,
-      data: obj.signal
-    }))
+  _signal (arr) {
+    if (arr.length !== 3) {
+      return
+    }
+    const [from, to, data] = arr
+
+    if (this._mapIdent.has(to)) {
+      this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', to, from, data]))
+    }
   }
 }
 

@@ -69,8 +69,8 @@ If you want to set up nginx as a reverse proxy, the following example configurat
         tcp_nodelay on;
       }
     
-        ssl_certificate /etc/letsencrypt/live/your.server.name/fullchain.pem; # managed by Certbot
-        ssl_certificate_key /etc/letsencrypt/live/your.server.name/privkey.pem; # managed by Certbot
+      ssl_certificate /etc/letsencrypt/live/your.server.name/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/your.server.name/privkey.pem;
     }
 
 
@@ -83,13 +83,65 @@ Stop the server:
 
     npm stop
 
-## How to Run Unit Tests
+### How to Run Unit Tests
     npm run test
 
 Coverage reports are stored within `./coverage`. Use any browser and open `./coverage/index.html`.
 
-## How to Lint (eslint)
+### How to Lint (eslint)
     npm run lint
+
+## API Documentation
+
+The API is only available via a websocket connection. It supports a few calls:
+* ident
+* join
+* signal
+
+A call and its related data must be sent as an Array packed into a JSON string over the socket. The response is also an Array packed into a JSON string.
+
+Examples:
+
+* Call: `["ident"]`
+* Response: `["ident", "some-unique-ident"]`
+
+
+* Call: `["join", "some-room"]`
+* Response: `["join", "some-room"]`
+* Response: `["stun", "some-ident", "some-other-ident", false]`
+
+
+### Call: ident
+
+Request a unique identifier from the connected signal server.
+
+Schema:
+
+`["ident"]`
+
+### Call: join
+
+Request to join a room on the connected signal server. All peers within a room shall be connected to each other (mesh net).
+
+Schema:
+
+`["join", "room-name <string>"]`
+
+### Call: signal
+
+Send connection data received from the STUN server to another peer via the signal server. This will initiate a direct connection between two peers.
+
+Schema:
+
+`["signal", "from-ident <string>", "to-ident <string>", "signal-data-from-STUN-server <string>"]`
+
+### Response: ident
+
+### Response: join
+
+### Response: stun
+
+### Response: signal
 
 ## Contact the Developers
 

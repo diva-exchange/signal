@@ -1,6 +1,6 @@
 /*!
- * hangout signal server
- * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * Example Signal Server client
+ * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
  * GPL3 Licensed
  */
 
@@ -10,92 +10,83 @@ import Peer from 'simple-peer'
 import wrtc from 'wrtc'
 import WebSocket from 'ws'
 
-const map = {
-  client1: ['client2', 'client4'],
-  client2: ['client1', 'client3'],
-  client3: ['client2', 'client4'],
-  client4: ['client1', 'client3']
-}
+const STUN_SERVER = 'stun:kopanyo.com:3478'
 
 let ident = ''
-if (!process.argv[2] || !map[process.argv[2]]) {
-  ident = 'client1'
-} else {
-  ident = process.argv[2]
-}
+const peers = new Map()
 
-console.log(ident)
-
-const websocket = new WebSocket('wss://signal.diva.exchange', {
+const websocket = new WebSocket('ws://localhost:3913', {
   perMessageDeflate: false
 })
 
 websocket.on('open', () => {
-  // send all connection requests to websocket
-  map[ident].forEach((to) => {
-    // @TODO sign message with the private key of this client
-    websocket.send(JSON.stringify({
-      type: 'register',
-      from: ident,
-      to: to
-    }))
+  websocket.send(JSON.stringify(['ident']))
+
+  websocket.on('message', (message) => {
+    let peer = null
+    let arr = []
+    try {
+      arr = JSON.parse(message)
+      switch (arr[0]) {
+        case 'ident':
+          ident = arr[1]
+          websocket.send(JSON.stringify(['join', ident, 'iroha']))
+          break
+        case 'join':
+          break
+        case 'stun':
+          peer = new Peer({
+            config: { iceServers: [{ urls: STUN_SERVER }] },
+            initiator: !!arr[3],
+            wrtc: wrtc
+          })
+
+          // p2p connection
+          peer.on('connect', () => {
+            // wait for 'connect' event before using the data channel
+            peer.send('hey ' + arr[2] + ', how is it going? Greetings, ' + arr[1])
+          })
+          peer.on('data', (data) => {
+            // got a data channel message
+            console.log('got data: ' + data)
+          })
+          peer.on('close', () => {
+            console.log('closed: ' + ident)
+          })
+
+          // error handling
+          peer.on('error', (error) => {
+            console.log('ERROR', error)
+          })
+
+          // this is incoming from STUN/TURN
+          peer.on('signal', (data) => {
+            websocket.send(JSON.stringify(['signal', arr[1], arr[2], data]))
+          })
+
+          peers.set(arr[2], peer)
+          break
+        case 'signal':
+          peers.get(arr[2]).signal(arr[3])
+          break
+      }
+    } catch (error) {
+      console.log(error)
+      process.exit(1)
+    }
   })
 })
 
-const peers = {}
-
-websocket.on('message', (message) => {
-  let obj = {}
-  try {
-    obj = JSON.parse(message)
-  } catch (error) {
-    return
-  }
-
-  init(obj)
+websocket.on('close', () => {
+  peers.forEach((p, k) => {
+    p.destroy()
+    peers.delete(k)
+  })
+  process.exit(0)
 })
 
-function init (obj) {
-  const _id = obj.from + ':' + obj.to
-  console.log(_id)
-  switch (obj.type) {
-    case 'init':
-    case 'rcpt':
-      peers[_id] = new Peer({
-        config: { iceServers: [{ urls: 'stun:kopanyo.com:3478' }] },
-        initiator: obj.type === 'init',
-        wrtc: wrtc
-      })
-      peers[_id].on('error', (error) => {
-        console.log('ERROR', error)
-        peers[_id] = false
-      })
-      // this is incoming from STUN/TURN
-      peers[_id].on('signal', (data) => {
-        const json = JSON.stringify({
-          type: 'signal',
-          signal: data,
-          from: ident,
-          to: obj.to
-        })
-        console.log('SIGNAL', json)
-        websocket.send(json)
-      })
-      peers[_id].on('connect', () => {
-        // wait for 'connect' event before using the data channel
-        peers[_id].send('hey ' + obj.to + ', how is it going? Greetings, ' + obj.from)
-      })
-      peers[_id].on('data', (data) => {
-        // got a data channel message
-        console.log('got data: ' + data)
-      })
-      break
-    case 'signal':
-      if (peers[_id]) {
-        peers[_id].signal(obj.data)
-      }
-      break
-    default:
-      break
-  }
-}
+process.on('SIGTERM', () => {
+  websocket.close(1000, 'ByeBye')
+}).on('SIGINT', () => {
+  websocket.close(1000, 'ByeBye')
+})
