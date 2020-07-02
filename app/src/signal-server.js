@@ -28,7 +28,6 @@ export class SignalServer {
     if (_p < 1025 || _p > 65535) {
       throw new Error('invalid port')
     }
-
     return new SignalServer(_p)
   }
 
@@ -72,7 +71,7 @@ export class SignalServer {
       this._id++
       this._sockets[id] = socket
       this._idents[id] = []
-      this._sockets[id].on('message', (message) => {
+      socket.on('message', (message) => {
         try {
           arr = JSON.parse(message)
           if (!Array.isArray(arr) || !arr[0]) {
@@ -97,8 +96,8 @@ export class SignalServer {
         }
       })
 
-      this._sockets[id].on('close', (code, reason) => {
-        this._idents.forEach((ident) => {
+      socket.on('close', (code, reason) => {
+        this._idents[id].forEach((ident) => {
           this._mapRoom.forEach((mapRoom) => {
             mapRoom.delete(ident)
           })
@@ -176,26 +175,22 @@ export class SignalServer {
       this._mapRoom.set(room, new Map())
     }
 
-    const mapRoom = this._mapRoom.get(room)
     // a room can be joined only once
-    if (mapRoom.has(ident)) {
+    if (this._mapRoom.get(room).has(ident)) {
       return
     }
 
-    mapRoom.set(ident, this._mapIdent.get(ident))
+    this._mapRoom.get(room).set(ident, this._mapIdent.get(ident))
 
-    // respond with the room
-    this._sockets[id].send(JSON.stringify(['join', room]))
+    // respond with ident and room
+    this._sockets[id].send(JSON.stringify(['join', ident, room]))
 
-    // walk through the room and send a p2p connection request to each participant
-    if (mapRoom.size > 1) {
-      mapRoom.forEach((i, to) => {
-        if (ident !== to) {
-          this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['stun', to, ident, true]))
-          this._sockets[this._mapIdent.get(ident)].send(JSON.stringify(['stun', ident, to, false]))
-        }
-      })
-    }
+    this._mapRoom.get(room).forEach((i, to) => {
+      if (ident !== to) {
+        this._sockets[i].send(JSON.stringify(['stun', to, ident, true]))
+        this._sockets[this._mapIdent.get(ident)].send(JSON.stringify(['stun', ident, to, false]))
+      }
+    })
   }
 
   /**
