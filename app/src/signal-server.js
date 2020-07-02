@@ -1,4 +1,4 @@
-/*!
+/**
  * DIVA Signal server
  * Copyright(c) 2020 Konrad Baechler, https://diva.exchange
  * GPL3 Licensed
@@ -71,6 +71,7 @@ export class SignalServer {
       let arr = []
       this._id++
       this._sockets[id] = socket
+      this._idents[id] = []
       this._sockets[id].on('message', (message) => {
         try {
           arr = JSON.parse(message)
@@ -97,10 +98,13 @@ export class SignalServer {
       })
 
       this._sockets[id].on('close', (code, reason) => {
-        this._mapRoom.forEach((mapRoom) => {
-          mapRoom.delete(this._idents[id])
+        this._idents.forEach((ident) => {
+          this._mapRoom.forEach((mapRoom) => {
+            mapRoom.delete(ident)
+          })
+          this._mapIdent.delete(ident)
         })
-        this._mapIdent.delete(this._idents[id])
+        delete this._idents[id]
         delete this._sockets[id]
         Logger.trace(code + ' ' + reason)
       })
@@ -144,7 +148,7 @@ export class SignalServer {
 
     // send the new ident
     this._sockets[id].send(JSON.stringify(['ident', ident]))
-    this._idents[id] = ident
+    this._idents[id].push(ident)
   }
 
   // @TODO check validity of ident, like on the iroha blockchain
@@ -163,7 +167,7 @@ export class SignalServer {
 
     // store the given ident locally
     if (!this._mapIdent.has(ident)) {
-      this._idents[id] = ident
+      this._idents[id].push(ident)
       this._mapIdent.set(ident, id)
     }
 
