@@ -88,8 +88,11 @@ export class SignalServer {
             case 'signal':
               this._signal(arr)
               break
+            case 'ping':
+              socket.send(JSON.stringify(['pong']))
+              break
             default:
-              Logger.error('unsupported api call')
+              break
           }
         } catch (error) {
           Logger.error(error)
@@ -181,6 +184,7 @@ export class SignalServer {
     }
 
     this._mapRoom.get(room).set(ident, this._mapIdent.get(ident))
+    Logger.trace(room).trace(this._mapRoom.get(room))
 
     // respond with ident and room
     this._sockets[id].send(JSON.stringify(['join', ident, room]))
