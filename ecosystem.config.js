@@ -13,7 +13,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
         PORT: 3903,
-        LOG_LEVEL: 'trace'
+        LOG_LEVEL: 'warning'
       }
     }
   ]
