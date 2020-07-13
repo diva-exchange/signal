@@ -38,7 +38,7 @@ export class SignalServer {
    * @private
    */
   constructor (port) {
-    this._id = 0
+    this._id = 1
     this._sockets = []
     this._idents = []
     this._mapIdent = new Map()
@@ -66,9 +66,8 @@ export class SignalServer {
     })
 
     this._websocketServer.on('connection', (socket) => {
-      const id = this._id
       let arr = []
-      this._id++
+      const id = this._id++
       this._sockets[id] = socket
       this._idents[id] = []
       socket.on('message', (message) => {
