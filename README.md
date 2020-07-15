@@ -5,7 +5,7 @@ More about DIVA.EXCHANGE on https://diva.exchange.
 ## Overview and Architecture
 A generic rendezvous server to enable NAT traversal of services located behind firewalls. Let's take a look at the architecture. The figure below uses - as an example - "Iroha" clients as peers. These clients just want to talk to each other.
 
-![Architecture DIVA.EXCHANGE Signal Server](https://www.diva.exchange/wp-content/uploads/2020/05/diva-webrtc-iroha.jpg)
+![Architecture DIVA.EXCHANGE Signal Server](https://www.diva.exchange/wp-content/uploads/2020/05/diva-webrtc-iroha-700x700.jpg)
 
 ## Getting Started
 
