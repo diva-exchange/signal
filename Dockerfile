@@ -11,7 +11,8 @@ COPY app /home/node/app
 COPY entrypoint.sh /
 
 RUN cd /home/node/ \
-  && npm i --production
+  && npm i --production \
+  && chmod a+x /entrypoint.sh
 
 EXPOSE 3903
 

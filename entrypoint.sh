@@ -19,17 +19,14 @@
 # Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
 #
 
-# catch SIGINT and SIGTERM
-trap "pkill -SIGTERM node ; exit 0" SIGTERM SIGINT
-
-su - node
-
 # set environment
 NODE_ENV=${NODE_ENV:-production}
-PORT=3903
+
+# catch SIGINT and SIGTERM
+trap "pkill -SIGTERM node && exit 0" SIGTERM SIGINT
 
 # start application
-node -r esm app/main.js
+su node -c "NODE_ENV=${NODE_ENV} PORT=3903 node -r esm app/main.js 2>&1 &"
 
 # wait forever
 while true

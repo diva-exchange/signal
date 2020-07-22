@@ -132,11 +132,10 @@ export class SignalServer {
    * Shutdown the server
    * @public
    */
-  shutdown () {
+  async shutdown () {
     this._websocketServer.clients.forEach((client) => { client.close() })
-    this._server.close(() => {
-      Logger.info('SignalServer closed')
-    })
+    await this._server.close()
+    Logger.info('SignalServer closed')
   }
 
   /**
