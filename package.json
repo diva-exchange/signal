@@ -21,9 +21,8 @@
   },
   "scripts": {
     "lint": "node_modules/.bin/eslint --fix app/src",
-    "start": "pm2 start ecosystem.config.js --env production",
-    "start-dev": "pm2 start ecosystem.config.js",
-    "stop": "pm2 stop ecosystem.config.js",
+    "start": "NODE_ENV=production PORT=3903 node -r esm app/main.js",
+    "start-dev": "PORT=3913 node -r esm app/main.js",
     "test": "nyc mocha"
   },
   "dependencies": {
@@ -32,31 +31,27 @@
     "express": "^4.17.1",
     "nanoid": "^3.1.10",
     "simple-peer": "^9.7.2",
-    "wrtc": "^0.4.5",
+    "wrtc": "^0.4.6",
     "ws": "^7.3.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.5.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "mocha": "^8.0.1",
-    "npm-check-updates": "^7.0.1",
+    "npm-check-updates": "^7.0.2",
     "nyc": "^15.1.0"
-  },
-  "peerDependencies": {
-    "pm2": "^4.4.0"
   },
   "mocha": {
     "require": [
       "esm"
     ],
-    "recursive": true,
-    "spec": "app/test/"
+    "spec": "app/test/**/*.spec.js"
   },
   "nyc": {
     "reporter": [
@@ -65,11 +60,6 @@
     ],
     "include": [
       "app/src/**/*.js"
-    ],
-    "require": [
-      "esm"
-    ],
-    "check-coverage": false,
-    "cache": true
+    ]
   }
 }
