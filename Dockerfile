@@ -6,8 +6,6 @@ LABEL author="Konrad Baechler <konrad@diva.exchange>" \
   description="A generic rendezvous server to enable NAT traversal of services located behind firewalls" \
   url="https://diva.exchange"
 
-WORKDIR /home/node
-
 COPY package.json /home/node/package.json
 COPY app /home/node/app
 COPY entrypoint.sh /

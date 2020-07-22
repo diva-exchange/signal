@@ -71,7 +71,9 @@ export class SignalServer {
       res.status(404).sendFile(path.join(__dirname, '/../view/404.html'))
     })
 
-    this._server = this._app.listen(port)
+    this._server = this._app.listen(port, () => {
+      Logger.info(`SignalServer listening on port ${port}`)
+    })
 
     /** @type {WebSocket.Server} */
     this._websocketServer = new WebSocket.Server({
@@ -114,10 +116,10 @@ export class SignalServer {
 
       socket.on('close', (code, reason) => {
         this._idents[id].forEach((ident) => {
-          this._mapRoom.forEach((mapRoom) => {
+          this._mapRoom.forEach((mapRoom, room) => {
             mapRoom.delete(ident)
+            this._mapIdent.delete(room + ':' + ident)
           })
-          this._mapIdent.delete(ident)
         })
         delete this._idents[id]
         delete this._sockets[id]
@@ -133,7 +135,7 @@ export class SignalServer {
   shutdown () {
     this._websocketServer.clients.forEach((client) => { client.close() })
     this._server.close(() => {
-      Logger.trace('SignalServer closed')
+      Logger.info('SignalServer closed')
     })
   }
 
@@ -181,9 +183,10 @@ export class SignalServer {
     const [ident, room] = arr
 
     // store the given ident locally
-    if (!this._mapIdent.has(ident)) {
+    const globalIdent = room + ':' + ident
+    if (!this._mapIdent.has(globalIdent)) {
       this._idents[id].push(ident)
-      this._mapIdent.set(ident, id)
+      this._mapIdent.set(globalIdent, id)
     }
 
     // join a room
@@ -196,16 +199,20 @@ export class SignalServer {
       return
     }
 
-    this._mapRoom.get(room).set(ident, this._mapIdent.get(ident))
+    this._mapRoom.get(room).set(ident, this._mapIdent.get(globalIdent))
     Logger.trace(room).trace(this._mapRoom.get(room))
 
     // respond with ident and room
-    this._sockets[id].send(JSON.stringify(['join', ident, room]))
+    this._sockets[id].send(JSON.stringify(['join', globalIdent]))
 
     this._mapRoom.get(room).forEach((i, to) => {
       if (ident !== to) {
-        this._sockets[i].send(JSON.stringify(['stun', to, ident, true]))
-        this._sockets[this._mapIdent.get(ident)].send(JSON.stringify(['stun', ident, to, false]))
+        this._sockets[i].send(
+          JSON.stringify(['stun', room + ':' + to, globalIdent, true])
+        )
+        this._sockets[this._mapIdent.get(globalIdent)].send(
+          JSON.stringify(['stun', globalIdent, room + ':' + to, false])
+        )
       }
     })
   }

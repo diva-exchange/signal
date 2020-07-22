@@ -43,8 +43,6 @@ websocket.on('open', () => {
       switch (arr[0]) {
         case 'ident':
           ident = arr[1]
-          websocket.send(JSON.stringify(['join', ident, 'iroha']))
-          websocket.send(JSON.stringify(['join', ident + '_0', 'iroha']))
           websocket.send(JSON.stringify(['join', ident + '_1', 'iroha']))
           websocket.send(JSON.stringify(['join', ident + '_2', 'iroha']))
           websocket.send(JSON.stringify(['join', ident + '_3', 'iroha']))
@@ -71,7 +69,7 @@ websocket.on('open', () => {
               console.log('got data: ' + data)
             })
             peers.get(identPeer).on('close', () => {
-              console.log('closed: ' + ident)
+              console.log('closed: ' + identPeer)
             })
 
             // error handling

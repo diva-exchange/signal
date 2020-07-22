@@ -107,8 +107,8 @@ Examples:
 
 
 * Call: `["join", "some-room"]`
-* Response: `["join", "some-room"]`
-* Response: `["stun", "some-ident", "some-other-ident", false]`
+* Response: `["join", "some-room:some-ident"]`
+* Response: `["stun", "some-room:some-ident", "some-room:some-other-ident", false]`
 
 
 ### Call: ident
@@ -117,7 +117,9 @@ Request a unique identifier from the connected signal server.
 
 Schema:
 
-`["ident"]`
+    [
+      "ident"
+    ]
 
 ### Call: join
 
@@ -125,7 +127,10 @@ Request to join a room on the connected signal server. All peers within a room s
 
 Schema:
 
-`["join", "room-name <string>"]`
+    [
+      "join", 
+      "room-name-to-join <string>"
+    ]
 
 ### Call: signal
 
@@ -133,17 +138,56 @@ Send connection data received from the STUN server to another peer via the signa
 
 Schema:
 
-`["signal", "from-ident <string>", "to-ident <string>", "signal-data-from-STUN-server <string>"]`
+    [
+      "signal",
+      "from-room <string> : from-ident <string>",
+      "to-room <string> : to-ident <string>",
+      "signal-data-from-STUN-server <string>"
+    ]
 
 ### Response: ident
 
+    [
+      "ident", 
+      "ident <string>"
+    ]
+
 ### Response: join
 
+    [
+      "join", 
+      "room <string> : ident <string>"
+    ]
+
 ### Response: stun
+    [
+      "stun",
+      "from-room <string> : from-ident <string>",
+      "to-room <string> : to-ident <string>",
+      "isInitiator <boolean>"
+    ]
 
 ### Response: signal
 
+    [
+      "signal",
+      "from-room <string> : from-ident <string>",
+      "to-room <string> : to-ident <string>",
+      "signal-data-from-STUN-server <string>"
+    ]
+
 ## Contact the Developers
 
-Via the [website](https://www.diva.exchange/en/team-and-contact/) - several options, including Chat.
+On [DIVA.EXCHANGE](https://www.diva.exchange) you'll find various options to get in touch with the team. 
 
+Talk to us via Telegram [https://t.me/diva_exchange_chat_de]() (English or German).
+
+## Donations
+
+Your donation goes entirely to the project. Your donation makes the development of DIVA.EXCHANGE faster.
+
+XMR: 42QLvHvkc9bahHadQfEzuJJx4ZHnGhQzBXa8C9H3c472diEvVRzevwpN7VAUpCPePCiDhehH4BAWh8kYicoSxpusMmhfwgx
+
+BTC: 3Ebuzhsbs6DrUQuwvMu722LhD8cNfhG1gs
+
+Awesome, thank you!

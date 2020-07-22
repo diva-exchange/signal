@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Copyright (C) 2020 diva.exchange
 #
@@ -19,20 +19,20 @@
 # Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
 #
 
-# catch SIGINT and SIGTERM
-trap "pkill -SIGTERM node ; exit 0" SIGTERM SIGINT
+# -e  Exit immediately if a simple command exits with a non-zero status
+set -e
 
-su - node
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd ${PROJECT_PATH}/../
 
-# set environment
+# @TODO replace environment variables with arguments, like: run.sh --name=my-iroha-proxy
 NODE_ENV=${NODE_ENV:-production}
-PORT=3903
+PORT=${PORT:-3903}
 
-# start application
-node -r esm app/main.js
-
-# wait forever
-while true
-do
-  tail -f /dev/null & wait ${!}
-done
+# start the container
+docker run \
+  -d \
+  -p ${PORT}:3903 \
+  --env NODE_ENV=${NODE_ENV} \
+  --name diva-signal-server \
+  divax/signal:latest
