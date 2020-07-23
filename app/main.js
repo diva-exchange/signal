@@ -25,8 +25,9 @@ import { SignalServer } from './src/signal-server'
 const server = SignalServer.make(process.env.PORT || 3913)
 
 for (const sig of ['SIGINT', 'SIGTERM']) {
-  process.once(sig, async () => {
-    await server.shutdown()
-    process.exit(0)
+  process.once(sig, () => {
+    server.shutdown().then(() => {
+      process.exit(0)
+    })
   })
 }

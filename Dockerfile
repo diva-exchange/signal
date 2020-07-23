@@ -2,9 +2,9 @@ FROM node:lts-alpine
 
 LABEL author="Konrad Baechler <konrad@diva.exchange>" \
   maintainer="Konrad Baechler <konrad@diva.exchange>" \
-  name="diva.signal.server" \
+  name="signal.diva.exchange" \
   description="A generic rendezvous server to enable NAT traversal of services located behind firewalls" \
-  url="https://diva.exchange"
+  url="https://signal.diva.exchange"
 
 COPY package.json /home/node/package.json
 COPY app /home/node/app

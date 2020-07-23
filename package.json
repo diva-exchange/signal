@@ -1,7 +1,7 @@
 {
-  "name": "@diva.exchange/signal-server",
-  "version": "2.2.1",
-  "description": "STUN rendezvous server, NAT traversal for peers",
+  "name": "@diva.exchange/signal",
+  "version": "2.2.3",
+  "description": "STUN rendezvous server, NAT traversal for peers, enable P2P communication",
   "main": "app/src/signal-server.js",
   "keywords": [
     "p2p",

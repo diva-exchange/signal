@@ -23,7 +23,7 @@
 NODE_ENV=${NODE_ENV:-production}
 
 # catch SIGINT and SIGTERM
-trap "pkill -SIGTERM node && exit 0" SIGTERM SIGINT
+trap "pkill -SIGINT node ; sleep 5 ; exit 0" SIGTERM SIGINT
 
 # start application
 su node -c "NODE_ENV=${NODE_ENV} PORT=3903 node -r esm app/main.js 2>&1 &"
