@@ -106,7 +106,7 @@ Examples:
 * Response: `["ident", "some-unique-ident"]`
 
 
-* Call: `["join", "some-room"]`
+* Call: `["join", "some-unique-ident", "some-room"]`
 * Response: `["join", "some-room:some-ident"]`
 * Response: `["stun", "some-room:some-ident", "some-room:some-other-ident", false]`
 
@@ -125,24 +125,21 @@ Schema:
 
 Request to join a room on the connected signal server. All peers within a room shall be connected to each other (mesh net).
 
-Schema:
-
     [
       "join", 
-      "room-name-to-join <string>"
+      "ident <string>"
+      "room <string>"
     ]
 
 ### Call: signal
 
 Send connection data received from the STUN server to another peer via the signal server. This will initiate a direct connection between two peers.
 
-Schema:
-
     [
       "signal",
       "from-room <string> : from-ident <string>",
       "to-room <string> : to-ident <string>",
-      "signal-data-from-STUN-server <string>"
+      "signal-data-from-STUN-server <object>"
     ]
 
 ### Response: ident
