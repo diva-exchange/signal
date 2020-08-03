@@ -27,7 +27,7 @@ import WebSocket from 'ws'
 
 import { Logger } from '@diva.exchange/diva-logger'
 
-const CUSTOM_ALPHABET = 'ABCDFGHJKMNPQRSTVWXYZabcdfghjkmnpqrstvwxyz'
+const CUSTOM_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
 export class SignalServer {
   /**
@@ -155,7 +155,7 @@ export class SignalServer {
   /**
    * @param arr {Array} Data array, according to API spec
    * @param id {Number} Id of the WebSocket
-   * @return void
+   * @returns {Promise<void>}
    * @private
    */
   async _ident (arr, id) {
@@ -197,20 +197,20 @@ export class SignalServer {
     if (this._mapRoom.get(room).has(ident)) {
       return
     }
-
-    this._mapRoom.get(room).set(ident, this._mapIdent.get(globalIdent))
-    Logger.trace(room).trace(this._mapRoom.get(room))
+    this._mapRoom.get(room).set(ident, id)
+    Logger.trace('join: ' + ident).trace(this._mapRoom.get(room))
 
     // respond with ident and room
     this._sockets[id].send(JSON.stringify(['join', globalIdent]))
 
-    this._mapRoom.get(room).forEach((i, to) => {
+    // notify other participants in the room
+    this._mapRoom.get(room).forEach((_id, to) => {
       if (ident !== to) {
-        this._sockets[i].send(
-          JSON.stringify(['stun', room + ':' + to, globalIdent, true])
+        this._sockets[_id].send(
+          JSON.stringify(['stun', room + ':' + to, globalIdent, false])
         )
-        this._sockets[this._mapIdent.get(globalIdent)].send(
-          JSON.stringify(['stun', globalIdent, room + ':' + to, false])
+        this._sockets[id].send(
+          JSON.stringify(['stun', globalIdent, room + ':' + to, true])
         )
       }
     })
@@ -226,6 +226,7 @@ export class SignalServer {
     }
     const [from, to, data] = arr
 
+    Logger.trace('signal: ' + to).trace(this._mapIdent)
     if (this._mapIdent.has(to)) {
       this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', to, from, data]))
     }

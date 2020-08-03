@@ -22,10 +22,10 @@
 # -e  Exit immediately if a simple command exits with a non-zero status
 set -e
 
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd ${PROJECT_PATH}/../
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/../
+cd ${PROJECT_PATH}
 
-# @TODO replace environment variables with arguments, like: run.sh --name=my-iroha-proxy
+# @TODO replace environment variables with arguments, like: run.sh --name=my-signal-server
 NODE_ENV=${NODE_ENV:-production}
 PORT=${PORT:-3903}
 
