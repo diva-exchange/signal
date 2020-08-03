@@ -228,7 +228,7 @@ export class SignalServer {
 
     Logger.trace('signal: ' + to).trace(this._mapIdent)
     if (this._mapIdent.has(to)) {
-      this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', from, to, data]))
+      this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', to, from, data]))
     }
   }
 }
