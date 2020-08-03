@@ -21,6 +21,10 @@
 'use strict'
 
 import { SignalServer } from './src/signal-server'
+import { Logger } from '@diva.exchange/diva-logger'
+
+process.env.LOG_LEVEL = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'trace')
+Logger.setOptions({ name: 'SignalServer' })
 
 const server = SignalServer.make(process.env.PORT || 3913)
 

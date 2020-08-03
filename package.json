@@ -22,14 +22,14 @@
   "scripts": {
     "lint": "node_modules/.bin/eslint --fix app/src",
     "start": "NODE_ENV=production PORT=3903 node -r esm app/main.js",
-    "start-dev": "PORT=3913 node -r esm app/main.js",
+    "start-dev": "NODE_ENV=development PORT=3913 node -r esm app/main.js",
     "test": "nyc mocha"
   },
   "dependencies": {
     "@diva.exchange/diva-logger": "^0.2.5",
     "esm": "^3.2.25",
     "express": "^4.17.1",
-    "nanoid": "^3.1.10",
+    "nanoid": "^3.1.12",
     "simple-peer": "^9.7.2",
     "wrtc": "^0.4.6",
     "ws": "^7.3.1"
@@ -37,15 +37,16 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "eslint": "^7.5.0",
+    "eslint": "^7.6.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.0",
     "npm-check-updates": "^7.0.2",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "pino-pretty": "^4.1.0"
   },
   "mocha": {
     "require": [
