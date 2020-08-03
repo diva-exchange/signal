@@ -194,12 +194,11 @@ export class SignalServer {
     }
 
     // a room can be joined only once
-    Logger.trace(ident).trace(this._mapRoom.get(room))
     if (this._mapRoom.get(room).has(ident)) {
       return
     }
-
     this._mapRoom.get(room).set(ident, id)
+    Logger.trace('join: ' + ident).trace(this._mapRoom.get(room))
 
     // respond with ident and room
     this._sockets[id].send(JSON.stringify(['join', globalIdent]))
@@ -207,12 +206,11 @@ export class SignalServer {
     // notify other participants in the room
     this._mapRoom.get(room).forEach((_id, to) => {
       if (ident !== to) {
-        to = room + ':' + to
         this._sockets[_id].send(
-          JSON.stringify(['stun', to, globalIdent, false])
+          JSON.stringify(['stun', room + ':' + to, globalIdent, false])
         )
-        this._sockets[this._mapIdent.get(globalIdent)].send(
-          JSON.stringify(['stun', globalIdent, to, true])
+        this._sockets[id].send(
+          JSON.stringify(['stun', globalIdent, room + ':' + to, true])
         )
       }
     })
@@ -228,6 +226,7 @@ export class SignalServer {
     }
     const [from, to, data] = arr
 
+    Logger.trace('signal: ' + to).trace(this._mapIdent)
     if (this._mapIdent.has(to)) {
       this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', to, from, data]))
     }
