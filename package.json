@@ -1,6 +1,6 @@
 {
   "name": "@diva.exchange/signal",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "STUN rendezvous server, NAT traversal for peers, enable P2P communication",
   "main": "app/src/signal-server.js",
   "keywords": [

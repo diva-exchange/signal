@@ -80,12 +80,12 @@ export class SignalServer {
       server: this._server
     })
 
-    this._websocketServer.on('connection', (socket) => {
+    this._websocketServer.on('connection', (socket, req) => {
       let arr = []
       const id = this._id++
       this._sockets[id] = socket
       this._idents[id] = []
-      Logger.trace('Connection: ' + id + ' / ' + socket.remoteAddress)
+      Logger.trace('Connection: ' + id + ' / ' + req.socket.remoteAddress)
       socket.on('message', (message) => {
         try {
           arr = JSON.parse(message)
