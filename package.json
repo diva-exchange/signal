@@ -1,6 +1,6 @@
 {
   "name": "@diva.exchange/signal",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "STUN rendezvous server, NAT traversal for peers, enable P2P communication",
   "main": "app/src/signal-server.js",
   "keywords": [
@@ -14,7 +14,7 @@
     "turn"
   ],
   "author": "Konrad Baechler <konrad@diva.exchange> (https://diva.exchange)",
-  "license": "GPL-3.0-or-later",
+  "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "https://codeberg.org/diva.exchange/signal.git"
@@ -26,7 +26,7 @@
     "test": "nyc mocha"
   },
   "dependencies": {
-    "@diva.exchange/diva-logger": "^0.2.5",
+    "@diva.exchange/diva-logger": "^1.0.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "nanoid": "^3.1.12",
@@ -37,14 +37,14 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "eslint": "^7.6.0",
+    "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.1.0",
-    "npm-check-updates": "^7.0.2",
+    "mocha": "^8.1.1",
+    "npm-check-updates": "^7.1.1",
     "nyc": "^15.1.0",
     "pino-pretty": "^4.1.0"
   },
