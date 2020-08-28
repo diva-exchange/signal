@@ -1,6 +1,6 @@
 {
   "name": "@diva.exchange/signal",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "STUN rendezvous server, NAT traversal for peers, enable P2P communication",
   "main": "app/src/signal-server.js",
   "keywords": [
@@ -43,7 +43,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.1.1",
+    "mocha": "^8.1.2",
     "npm-check-updates": "^7.1.1",
     "nyc": "^15.1.0",
     "pino-pretty": "^4.1.0"

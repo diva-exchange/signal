@@ -190,6 +190,7 @@ export class SignalServer {
 
     // join a room
     if (!this._mapRoom.has(room)) {
+      Logger.trace(`creating new room ${room}`)
       this._mapRoom.set(room, new Map())
     }
 
@@ -198,7 +199,7 @@ export class SignalServer {
       return
     }
     this._mapRoom.get(room).set(ident, id)
-    Logger.trace('join: ' + ident).trace(this._mapRoom.get(room))
+    Logger.trace(`join room ${room} with ident ${ident}`).trace(this._mapRoom.get(room))
 
     // respond with ident and room
     this._sockets[id].send(JSON.stringify(['join', globalIdent]))
@@ -226,7 +227,6 @@ export class SignalServer {
     }
     const [from, to, data] = arr
 
-    Logger.trace('signal: ' + to).trace(this._mapIdent)
     if (this._mapIdent.has(to)) {
       this._sockets[this._mapIdent.get(to)].send(JSON.stringify(['signal', to, from, data]))
     }
